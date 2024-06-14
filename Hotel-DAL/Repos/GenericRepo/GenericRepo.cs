@@ -1,4 +1,5 @@
 ﻿using Hotel_DAL.Data.Context;
+using Hotel_DAL.Data.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,11 @@ namespace Hotel_DAL.Repos.GenericRepo
         {
             _HotelDbContext = hotelDbContext;
         }
-        public async Task Add(TEntity obj)
+        public async Task<TEntity> Add(TEntity obj)
         {
             await _HotelDbContext.Set<TEntity>().AddAsync(obj);
-            await _HotelDbContext.SaveChangesAsync();
+             await _HotelDbContext.SaveChangesAsync();
+            return obj;
         }
 
         public async Task Delete(TEntity obj)

@@ -33,13 +33,15 @@
                 success: function (res) {
                     var rows = '';
                     console.log("data : ", res.data);
-                    $.each(res.data, function (index,booking) {
+                    $.each(res.data, function (index, booking) {
                         rows += '<tr>' +
-                            '<td>' + booking.customer+ '</td>' +
+                            '<td>' + booking.customer + '</td>' +
                             '<td>' + new Date(booking.checkInDate).toLocaleDateString() + '</td>' +
                             '<td>' + new Date(booking.checkOutDate).toLocaleDateString() + '</td>' +
                             '<td>' + booking.numOfRooms + '</td>' +
-                            '</tr>';
+                            '<td>' + '<button type="button" onclick="redirectToDetails(' + booking.id + ')">Details</button>'
+                            + '</td>'
+                            + '</tr>';
                     });
                     $('#bookingsTable tbody').html(rows);
                 },
@@ -48,6 +50,12 @@
                 }
             });
         });
+
+        function redirectToDetails(id) {
+            var url = '@Url.Action("Details", "Booking")/' + id;
+            window.location.href = url;
+            console.log("inside func");
+        }
     </script>
 </body>
 </html>

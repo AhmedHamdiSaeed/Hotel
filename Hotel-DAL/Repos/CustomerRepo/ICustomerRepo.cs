@@ -10,5 +10,6 @@ namespace Hotel_DAL.Repos.CustomerRepo
 {
     public interface ICustomerRepo:IGenericRepo<Customer>
     {
+        Customer? find(string name);
     }
 }

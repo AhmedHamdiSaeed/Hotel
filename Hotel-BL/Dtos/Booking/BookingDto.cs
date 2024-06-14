@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 namespace Hotel_BL.Dtos.Booking
 {
-    public record BookingDto(string Customer,string Branch,int NumOfRooms,DateOnly checkInDate,DateOnly checkOutDate);
+    public record BookingDto(int id,string Customer,string Branch,int NumOfRooms,DateOnly checkInDate,DateOnly checkOutDate);
  
 }

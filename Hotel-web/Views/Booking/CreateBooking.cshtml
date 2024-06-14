@@ -1,69 +1,92 @@
-﻿<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title></title>
-        </head>
-    
-    <body>
-
-    <h2>Create Booking</h2>
-
-    <form id="bookingForm" classname="container-fluid m-3">
+﻿<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation</title>
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .error {
+            border-color: red;
+        }
+        .error-message {
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <form id="bookingForm" class="container-fluid m-3">
         <div class="form-group">
             <label for="name" class="col-form-label">Name</label>
-            <input class="form-control"  type="text" id="name" name="name" required />
+            <input class="form-control" type="text" id="name" name="name" required />
         </div>
         <div>
-            <label for="nationalId" classname="col-form-label">National ID</label>
-            <input class="form-control"  type="text" id="nationalId" name="nationalId" required />
+            <label for="nationalId" class="col-form-label">National ID</label>
+            <input class="form-control" type="text" id="nationalId" name="nationalId" required />
         </div>
         <div>
-            <label for="phoneNumber" classname="col-form-label">Phone Number</label>
+            <label for="phoneNumber" class="col-form-label">Phone Number</label>
             <input class="form-control" type="text" id="phoneNumber" name="phoneNumber" required />
         </div>
         <div>
             <label for="hotelBranch" class="col-form-label">Hotel Branch</label>
-            <select id="hotelBranch" name="hotelBranch" required>
+            <select class="form-control" id="hotelBranch" name="hotelBranch" required>
                 <!-- Options populated via JavaScript -->
             </select>
         </div>
         <div>
             <label for="checkInDate" class="col-form-label">Check-In Date</label>
-            <input class="form-control"  type="date" id="checkInDate" name="checkInDate" required />
+            <input class="form-control" type="date" id="checkInDate" name="checkInDate" required />
         </div>
         <div>
-            <label for="checkOutDate">Check-Out Date</label>
-            <input class="form-control"  type="date" id="checkOutDate" name="checkOutDate" required />
+            <label for="checkOutDate" class="col-form-label">Check-Out Date</label>
+            <input class="form-control" type="date" id="checkOutDate" name="checkOutDate" required />
         </div>
-        <input type="number" id="numberOfRooms" placeholder="Number of Rooms" required>
-    <button type="button" id="nextButton">Next</button>
-     
-       
+        <div>
+            <input class="form-control" type="number" id="numberOfRooms" placeholder="Number of Rooms" required>
+        </div>
+        <button type="button" id="nextButton">Next</button>
     </form>
 
-    <form id="roomDetailsForm">
+    <form id="roomDetailsForm" style="display: none;">
         <div id="roomDetailsContainer"></div>
+        <div class="error-message" id="roomNumberError">Each room must have a unique number.</div>
         <button type="submit">Submit</button>
     </form>
-    @section Scripts {
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                // Fetch hotel branches and populate select
-                $.getJSON('http://localhost:5161/api/Branch', function (res) {
-                    var branchOptions = '';
-                    $.each(res.data, function (index, value) {
-                        branchOptions += '<option value="' + value.id + '">' + value.name + '</option>';
-                    });
-                    $('#hotelBranch').html(branchOptions);
+
+    <script>
+        $(document).ready(function() {
+       
+            $.getJSON('http://localhost:5161/api/Branch', function (res) {
+                var branchOptions = '';
+                $.each(res.data, function (index, value) {
+                    branchOptions += '<option value="' + value.id + '">' + value.name + '</option>';
+                });
+                $('#hotelBranch').html(branchOptions);
+            }).fail(function () {
+                console.error('Error fetching branches');
+            });
+
+            $('#nextButton').on('click', function () {
+                var allFilled = true;
+
+                $('#bookingForm input[required], #bookingForm select[required]').each(function () {
+                    if ($(this).val() === '') {
+                        allFilled = false;
+                        $(this).addClass('error'); // Highlight empty required fields
+                    } else {
+                        $(this).removeClass('error'); // Remove highlight from filled fields
+                    }
                 });
 
-                $('#nextButton').on('click', function () {
+                if (!allFilled) {
+                    alert('Please fill all required fields.');
+                } else {
                     const numberOfRooms = $('#numberOfRooms').val();
                     let roomDetailsHtml = '';
-
                     $.getJSON('http://localhost:5161/api/Category', function (categoryRes) {
                         var categoryOptions = {};
-
                         // Collect options and constraints for each room type
                         $.each(categoryRes.data, function (index, value) {
                             categoryOptions[value.id] = {
@@ -72,129 +95,202 @@
                                 maxChildren: value.maxChildren
                             };
                         });
-
-                        // Get rooms available for each room type
-                        $.getJSON('http://localhost:5161/api/Room', function (roomRes) {
-                            var roomOptions = {};
-
-                            // Populate roomOptions based on the API response
-                            $.each(roomRes.data, function (index, value) {
-                                if (!roomOptions[value.roomType]) {
-                                    roomOptions[value.roomType] = [];
-                                }
-                                roomOptions[value.roomType].push(value);
+                        // Generate room details HTML
+                        for (let i = 0; i < numberOfRooms; i++) {
+                            roomDetailsHtml += `
+                                <div class="room-detail">
+                                    <h4>Room ${i + 1}</h4>
+                                    <select class="roomType" data-room-index="${i}">
+                                        ${Object.keys(categoryOptions).map(key => `
+                                            <option value="${key}" data-max-adults="${categoryOptions[key].maxAdults}" data-max-children="${categoryOptions[key].maxChildren}">
+                                                ${categoryOptions[key].roomType}
+                                            </option>`).join('')}
+                                    </select>
+                                    <select class="roomNumber" id="roomNumber${i}" data-room-index="${i}">
+                                        <!-- Room numbers will be populated dynamically -->
+                                    </select>
+                                    <input type="number" class="numAdults" id="numAdults${i}" placeholder="Number of Adults" required>
+                                    <input type="number" class="numChildren" id="numChildren${i}" placeholder="Number of Children" required>
+                                </div>
+                            `;
+                        }
+                        $('#roomDetailsContainer').html(roomDetailsHtml);
+                        // Set the initial min/max values based on the first room type
+                        $('.roomType').each(function () {
+                            const roomIndex = $(this).data('room-index');
+                            const $selectedOption = $(this).find('option:selected');
+                            const maxAdults = $selectedOption.data('max-adults');
+                            const maxChildren = $selectedOption.data('max-children');
+                            $('#numAdults' + roomIndex).attr({
+                                min: 1,
+                                max: maxAdults
                             });
-
-                            // Generate room details HTML
-                            for (let i = 0; i < numberOfRooms; i++) {
-                                roomDetailsHtml += `
-                                    <div class="room-detail">
-                                        <h4>Room ${i + 1}</h4>
-                                        <select class="roomType" data-room-index="${i}">
-                                            ${Object.keys(categoryOptions).map(key => `
-                                                <option value="${key}" data-max-adults="${categoryOptions[key].maxAdults}" data-max-children="${categoryOptions[key].maxChildren}">
-                                                    ${categoryOptions[key].roomType}
-                                                </option>`).join('')}
-                                        </select>
-                                        <select class="roomNumber" id="roomNumber${i}">
-                                            <!-- Room numbers will be populated dynamically -->
-                                        </select>
-                                        <input type="number" class="numAdults" id="numAdults${i}" placeholder="Number of Adults" required>
-                                        <input type="number" class="numChildren" id="numChildren${i}" placeholder="Number of Children" required>
-                                    </div>
-                                `;
-                            }
-
-                            $('#roomDetailsContainer').html(roomDetailsHtml);
-
-                            // Set the initial min/max values based on the first room type
-                            $('.roomType').each(function () {
-                                const roomIndex = $(this).data('room-index');
-                                const $selectedOption = $(this).find('option:selected');
-                                const maxAdults = $selectedOption.data('max-adults');
-                                const maxChildren = $selectedOption.data('max-children');
-                                $('#numAdults' + roomIndex).attr({
-                                    min: 1,
-                                    max: maxAdults
-                                });
-                                $('#numChildren' + roomIndex).attr({
-                                    min: 0,
-                                    max: maxChildren
-                                });
-
-                                // Populate room numbers for the selected room type
-                                populateRoomNumbers(roomIndex, roomOptions[$selectedOption.val()]);
+                            $('#numChildren' + roomIndex).attr({
+                                min: 0,
+                                max: maxChildren
                             });
-
-                            // Change event for roomType to update min/max values and room numbers
-                            $('.roomType').on('change', function () {
-                                const roomIndex = $(this).data('room-index');
-                                const $selectedOption = $(this).find('option:selected');
-                                const maxAdults = $selectedOption.data('max-adults');
-                                const maxChildren = $selectedOption.data('max-children');
-                                $('#numAdults' + roomIndex).attr({
-                                    min: 1,
-                                    max: maxAdults
-                                });
-                                $('#numChildren' + roomIndex).attr({
-                                    min: 0,
-                                    max: maxChildren
-                                });
-
-                                // Populate room numbers for the selected room type
-                                populateRoomNumbers(roomIndex, roomOptions[$selectedOption.val()]);
-                            });
-                        }).fail(function () {
-                            console.error('Error fetching rooms');
+                            populateRoomNumbers(roomIndex, $selectedOption.val() - 1);
                         });
+                        // Change event for roomType to update min/max values and room numbers
+                        $('.roomType').on('change', function () {
+                            const roomIndex = $(this).data('room-index');
+                            const $selectedOption = $(this).find('option:selected');
+                            const maxAdults = $selectedOption.data('max-adults');
+                            const maxChildren = $selectedOption.data('max-children');
+                            $('#numAdults' + roomIndex).attr({
+                                min: 1,
+                                max: maxAdults
+                            });
+                            $('#numChildren' + roomIndex).attr({
+                                min: 0,
+                                max: maxChildren
+                            });
+                            populateRoomNumbers(roomIndex, $selectedOption.val() - 1);
+                        });
+
+                        // Add event listener for room number selection validation
+                        $('.roomNumber').on('change', validateRoomNumbers);
+
                     }).fail(function () {
                         console.error('Error fetching categories');
                     });
-                });
 
-                $('#roomDetailsForm').submit(function (event) {
-                    event.preventDefault();
+                    $('#roomDetailsForm').submit(function (event) {
+                        event.preventDefault();
 
-                    var rooms = [];
-                    $('#roomDetailsContainer .room-detail').each(function () {
-                        var room = {
-                            roomType: $(this).find('.roomType').val(),
-                            numberOfAdults: $(this).find('.numAdults').val(),
-                            numberOfChildren: $(this).find('.numChildren').val(),
-                            roomID: $(this).find('.roomNumber').val()
-                        };
-                        rooms.push(room);
+                        var isValid = validateRoomNumbers();
+                        if (isValid) {
+                            var rooms = [];
+                            $('#roomDetailsContainer .room-detail').each(function () {
+                                var room = {
+                                    roomType: parseInt($(this).find('.roomType').val())-1,
+                                    numberOfAdults: parseInt($(this).find('.numAdults').val()),
+                                    numberOfChildren: parseInt($(this).find('.numChildren').val()),
+                                    roomID: parseInt($(this).find('.roomNumber').val())
+                                };
+                                rooms.push(room);
+                            });
+
+                            var checkInDate = parseDate($('#checkInDate').val());
+                            var checkOutDate = parseDate($('#checkOutDate').val());
+                            var booking = {
+                                name: $('#name').val(),
+                                nationalId: $('#nationalId').val(),
+                                phoneNumber: $('#phoneNumber').val(),
+                                branchID:parseInt($('#hotelBranch').val())-1,
+                                numOfRooms: parseInt($('#numberOfRooms').val()),
+                                bookingDate: {
+                                    checkInDate: {
+                                        year: checkInDate.year,
+                                        month: checkInDate.month,
+                                        day: checkInDate.day
+                                    },
+                                    checkOutDate: {
+                                        year: checkOutDate.year,
+                                        month: checkOutDate.month,
+                                        day: checkOutDate.day
+                                    }
+                                },
+                                rooms: rooms
+                            };
+                            $.ajax({
+                                url: 'http://localhost:5161/api/Booking', // Replace with your API endpoint
+                                type: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(booking),
+                                success: function (res) {
+                                    console.log("res: ", res);
+                                    var redirectUrl = '@Url.Action("created", "Booking", new { TotalPrice = "PARAMETER" })'
+                                        .replace('PARAMETER', res.data);
+
+                                    // Now redirect to the constructed URL
+                                    window.location.href = redirectUrl;
+                                },
+                                error: function (xhr, status, error) {
+                                    alert('Error: ' + error);
+                                    console.error(xhr);
+                                }
+                            });
+
+
+                        } else {
+                            alert('Please ensure all room numbers are unique.');
+                        }
                     });
 
-                    var booking = {
-                        name: $('#name').val(),
-                        nationalId: $('#nationalId').val(),
-                        phoneNumber: $('#phoneNumber').val(),
-                        branchId: $('#hotelBranch').val(),
-                        checkInDate: $('#checkInDate').val(),
-                        checkOutDate: $('#checkOutDate').val(),
-                        rooms: rooms
-                    };
-
-                    console.log("Booking: ", booking);
-
-                    // You can add code here to send the booking data to the server
-                });
+                    $('#roomDetailsForm').show();
+                }
             });
 
-            function populateRoomNumbers(roomIndex, availableRooms) {
+            function populateRoomNumbers(roomIndex, selectedRoomType) {
                 var roomNumberOptions = '';
-                if (Array.isArray(availableRooms)) {
-                    availableRooms.forEach(function (room) {
-                        roomNumberOptions += `<option value="${room.id}">${room.roomNumber}</option>`;
-                    });
-                } else {
-                    console.error('Available rooms data is not an array:', availableRooms);
-                }
-                $('#roomNumber' + roomIndex).html(roomNumberOptions);
+                var checkInDate = $('#checkInDate').val();
+                var checkInDateObj = new Date(checkInDate);
+                var checkInYear = checkInDateObj.getFullYear();
+                var checkInMonth = checkInDateObj.getMonth() + 1; // Months are zero-based
+                var checkInDay = checkInDateObj.getDate();
+                // Extract year, month, and day for check-out date
+                var checkOutDate = $('#checkOutDate').val();
+                var checkOutDateObj = new Date(checkOutDate);
+                var checkOutYear = checkOutDateObj.getFullYear();
+                var checkOutMonth = checkOutDateObj.getMonth() + 1; // Months are zero-based
+                var checkOutDay = checkOutDateObj.getDate();
+                var availableRooms = {};
+                $.getJSON(`http://localhost:5161/api/Room/Available?checkInDate.Year=${checkOutYear}&checkInDate.Month=${checkInMonth}&checkInDate.Day=${checkInDay}&checkOutDate.Year=${checkOutYear}&checkOutDate.Month=${checkOutMonth}&checkOutDate.Day=${checkOutDay}&roomType=${selectedRoomType}`, function (res) {
+                    availableRooms = res.data;
+                    if (Array.isArray(availableRooms)) {
+                        availableRooms.forEach(function (room) {
+                            roomNumberOptions += `<option value="${room.id}">room ${room.id}</option>`;
+                        });
+                    } else {
+                        console.error('Available rooms data is not an array:', availableRooms);
+                    }
+                    $('#roomNumber' + roomIndex).html(roomNumberOptions);
+                }).fail(function () {
+                    console.error('Error fetching available rooms');
+                });
             }
-        </script>
-    }
 
+            function parseDate(dateString) {
+                // Parse the date string into a Date object
+                var dateObj = new Date(dateString);
+
+                // Extract year, month, and day from the Date object
+                var year = dateObj.getFullYear();
+                var month = dateObj.getMonth() + 1; // Adding 1 because getMonth() returns zero-based months (0-11)
+                var day = dateObj.getDate();
+
+                // Return an object with year, month, and day
+                return {
+                    year: year,
+                    month: month,
+                    day: day
+                };
+            }
+
+            function validateRoomNumbers() {
+                var selectedNumbers = [];
+                var isValid = true;
+                $('.roomNumber').each(function () {
+                    var roomNumber = $(this).val();
+                    if (selectedNumbers.includes(roomNumber)) {
+                        isValid = false;
+                        $(this).addClass('error');
+                    } else {
+                        selectedNumbers.push(roomNumber);
+                        $(this).removeClass('error');
+                    }
+                });
+
+                if (!isValid) {
+                    $('#roomNumberError').show();
+                } else {
+                    $('#roomNumberError').hide();
+                }
+
+                return isValid;
+            }
+        });
+    </script>
 </body>
 </html>
