@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace Hotel_BL.Dtos.Room
 {
-    public record BookingRoomDto(string RoomType,int NumOfAdults,int NumOfChildren,DateTime BookingDate);
+    public record BookingRoomDto(int RoomID,string RoomType,int NumOfAdults,int NumOfChildren);
 }

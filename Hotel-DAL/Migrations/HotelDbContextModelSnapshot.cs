@@ -30,6 +30,11 @@ namespace Hotel_DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("BookingDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.Property<int>("BranchID")
                         .HasColumnType("int");
 
@@ -55,28 +60,6 @@ namespace Hotel_DAL.Migrations
                     b.HasIndex("CustomerID");
 
                     b.ToTable("Bookings");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BranchID = 1,
-                            CustomerID = 1,
-                            NumOfRooms = 3,
-                            TotalPrice = 0.0,
-                            checkInDate = new DateOnly(2024, 1, 1),
-                            checkOutDate = new DateOnly(2024, 1, 10)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BranchID = 2,
-                            CustomerID = 2,
-                            NumOfRooms = 3,
-                            TotalPrice = 0.0,
-                            checkInDate = new DateOnly(2024, 2, 10),
-                            checkOutDate = new DateOnly(2024, 2, 20)
-                        });
                 });
 
             modelBuilder.Entity("Hotel_DAL.Data.Model.BookingRoom", b =>
@@ -88,9 +71,7 @@ namespace Hotel_DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("BookingDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("NumOfAdults")
                         .HasColumnType("int");

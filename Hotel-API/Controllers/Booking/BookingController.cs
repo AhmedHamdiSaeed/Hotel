@@ -1,5 +1,6 @@
 ﻿using Hotel_API.Extentions;
 using Hotel_BL.Dtos.Booking;
+using Hotel_BL.Dtos.Room;
 using Hotel_BL.Managers.Booking;
 using Hotel_DAL.Data.Model;
 using Hotel_DAL.Unit;
@@ -39,6 +40,8 @@ namespace Hotel_API.Controllers.Booking
             var message = await _bookingManager.AddBooking(booking);
             if (message != null)
             {
+                if ( message is List<int> && message[0]==0)
+                    return BadRequest(new ApiResponse(400, "not found any rooms",string.Empty));
                 return BadRequest(new ApiResponse(400, "These rooms ID are not available", message));
             }
             var TotalPrice = _bookingManager.calcPrice(booking.BookingDate,booking.Rooms,booking.Name, bookedPreviously);
@@ -46,7 +49,7 @@ namespace Hotel_API.Controllers.Booking
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookingDto>> GetByIdWithRooms(int id)
+        public async Task<ActionResult> GetByIdWithRooms(int id)
         {
             var booking =await _bookingManager.getByIdWithDetails(id);
             if(booking==null)

@@ -45,12 +45,13 @@ namespace Hotel_BL.Managers.Booking
             if(notAvailbleRoomsId.Count>0)
                 return notAvailbleRoomsId;
             var customer =  _unitOfWork.CustomerRepo.find(bookingAddDto.Name);
-            if(customer==null)
+            var bookedPreviously = true;
+            if (customer==null)
             {
                customer=await _unitOfWork.CustomerRepo.Add(new Hotel_DAL.Data.Model.Customer() {Name=bookingAddDto.Name,NationalID=bookingAddDto.NationalId,PhoneNumber=bookingAddDto.phoneNumber});
                 await _unitOfWork.SaveChangeAsync();
+                bookedPreviously = false;
             }
-            var bookedPreviously = this.ExistsPrev(bookingAddDto.Name);
             var TotalPrice =this.calcPrice(bookingAddDto.BookingDate, bookingAddDto.Rooms, bookingAddDto.Name, bookedPreviously);
             var booking = await _unitOfWork.BookingRepo.Add(new Hotel_DAL.Data.Model.Booking()
             {
@@ -75,8 +76,9 @@ namespace Hotel_BL.Managers.Booking
             var booking = await _unitOfWork.BookingRepo.getByIdWithDetails(id);
             if (booking == null)
                 return null;
-            var roomsDto = booking.BookingRooms.Select(r => new BookingRoomDto(r.Room.Category.RoomType.ToString(),r.NumOfAdults,r.NumOfChildren,r.BookingDate));
-            return new BookingDetailsDto(booking.Customer.Name, booking.Customer.NationalID, booking.Customer.PhoneNumber,booking.Branch.Name,booking.NumOfRooms,booking.checkInDate,booking.checkOutDate,roomsDto,booking.TotalPrice);
+            var roomsDto = booking.BookingRooms.Select(r => new BookingRoomDto(r.RoomID,r.Room.Category.RoomType.ToString(),r.NumOfAdults,r.NumOfChildren));
+            Console.WriteLine("roomsDto : ",roomsDto);
+            return new BookingDetailsDto(booking.Customer.Name, booking.Customer.NationalID, booking.Customer.PhoneNumber,booking.Branch.Name,booking.NumOfRooms,booking.checkInDate,booking.checkOutDate,roomsDto,booking.TotalPrice,booking.BookingDate);
         }
         public double calcPrice(BookingDate bookingDate,RoomAddDto[] rooms,string CustomerName, bool bookedPreviously)
         {

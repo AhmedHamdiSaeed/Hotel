@@ -22,7 +22,6 @@ namespace Hotel_DAL.Data.Model
         public int BranchID { get; set; }
         public Branch Branch { get; set; } = null!;
         public Category Category { get; set; } = null!;
-        public   Collection<Booking> Bookings { get; set; }=new Collection<Booking>() { };   
         public List<BookingRoom> BookingRooms { get; set; }=new List<BookingRoom>() { };
     }
 }

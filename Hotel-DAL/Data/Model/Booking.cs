@@ -17,9 +17,9 @@ namespace Hotel_DAL.Data.Model
         public int NumOfRooms { get; set; }
         public int BranchID { get; set; }
         public int CustomerID { get; set; } 
+        public DateTime BookingDate { get; set; }
         public Customer Customer { get; set; }=null!;
         public Branch Branch { get; set; } = null!;
-        public Collection<Room> Rooms { get; set; }=new Collection<Room>();
         public List<BookingRoom> BookingRooms { get; set; } = new List<BookingRoom>() { };
     }
 }

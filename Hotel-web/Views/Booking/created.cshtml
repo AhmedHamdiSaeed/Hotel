@@ -1,12 +1,25 @@
 ﻿@model double
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head><title></title></head>
-    <body>
+
+<style>
+    #Container {
+        border: 1px solid green;
+        border-radius: 10px;
+        background-color: #eeee;
+    }
+    body{
+        height:100%;
+    }
+    h2{
+        text-align:center;
+    }
+</style>
+<body>
 
 
 
-
-        <div class="container-fluid m-4 border-2 border-success p-3">
+        <div id="Container" class="container-fluid m-4 border-2 border-success p-3">
             <div class="row m-3">
             <h2>Submitted Successfully!</h2>
             </div>
@@ -14,5 +27,6 @@
             <h3>Total Price : <span class="text-primary">$ @Model </span></h3>
             </div>
         </div>
+
     </body>
 </html>

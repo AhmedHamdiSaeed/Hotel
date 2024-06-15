@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotel_DAL.Migrations
 {
     [DbContext(typeof(HotelDbContext))]
-    [Migration("20240614154935_q")]
-    partial class q
+    [Migration("20240615175634_q3")]
+    partial class q3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,11 @@ namespace Hotel_DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("BookingDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.Property<int>("BranchID")
                         .HasColumnType("int");
 
@@ -41,6 +46,9 @@ namespace Hotel_DAL.Migrations
 
                     b.Property<int>("NumOfRooms")
                         .HasColumnType("int");
+
+                    b.Property<double>("TotalPrice")
+                        .HasColumnType("float");
 
                     b.Property<DateOnly>("checkInDate")
                         .HasColumnType("date");
@@ -55,26 +63,6 @@ namespace Hotel_DAL.Migrations
                     b.HasIndex("CustomerID");
 
                     b.ToTable("Bookings");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BranchID = 1,
-                            CustomerID = 1,
-                            NumOfRooms = 3,
-                            checkInDate = new DateOnly(2024, 1, 1),
-                            checkOutDate = new DateOnly(2024, 1, 10)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BranchID = 2,
-                            CustomerID = 2,
-                            NumOfRooms = 3,
-                            checkInDate = new DateOnly(2024, 2, 10),
-                            checkOutDate = new DateOnly(2024, 2, 20)
-                        });
                 });
 
             modelBuilder.Entity("Hotel_DAL.Data.Model.BookingRoom", b =>
@@ -86,9 +74,7 @@ namespace Hotel_DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("BookingDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("NumOfAdults")
                         .HasColumnType("int");

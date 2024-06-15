@@ -19,6 +19,8 @@ namespace Hotel_DAL.Repos.NewFolder
         }
         public List<Room>? GetAvailableRooms(DateOnly checkInDate, DateOnly checkOutDate, RoomType? roomType = null)
         {
+            if(_HotelDbContext.Rooms.ToList().Count==0)
+                return null; 
             var bookedRoomIds = _HotelDbContext.BookingRooms.AsNoTracking()
                 .Where(br => br.Booking.checkInDate <= checkOutDate && br.Booking.checkOutDate >= checkInDate)
                 .Select(br => br.RoomID)

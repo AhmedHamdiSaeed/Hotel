@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotel_DAL.Migrations
 {
     [DbContext(typeof(HotelDbContext))]
-    [Migration("20240615022220_e")]
-    partial class e
+    [Migration("20240615165445_q")]
+    partial class q
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,9 +91,7 @@ namespace Hotel_DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("BookingDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("NumOfAdults")
                         .HasColumnType("int");

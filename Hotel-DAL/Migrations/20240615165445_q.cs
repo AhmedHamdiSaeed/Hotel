@@ -89,6 +89,7 @@ namespace Hotel_DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     checkInDate = table.Column<DateOnly>(type: "date", nullable: false),
                     checkOutDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    TotalPrice = table.Column<double>(type: "float", nullable: false),
                     NumOfRooms = table.Column<int>(type: "int", nullable: false),
                     BranchID = table.Column<int>(type: "int", nullable: false),
                     CustomerID = table.Column<int>(type: "int", nullable: false)
@@ -118,7 +119,7 @@ namespace Hotel_DAL.Migrations
                     BookingId = table.Column<int>(type: "int", nullable: false),
                     NumOfAdults = table.Column<int>(type: "int", nullable: false),
                     NumOfChildren = table.Column<int>(type: "int", nullable: false),
-                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -167,11 +168,11 @@ namespace Hotel_DAL.Migrations
 
             migrationBuilder.InsertData(
                 table: "Bookings",
-                columns: new[] { "Id", "BranchID", "CustomerID", "NumOfRooms", "checkInDate", "checkOutDate" },
+                columns: new[] { "Id", "BranchID", "CustomerID", "NumOfRooms", "TotalPrice", "checkInDate", "checkOutDate" },
                 values: new object[,]
                 {
-                    { 1, 1, 1, 3, new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 10) },
-                    { 2, 2, 2, 3, new DateOnly(2024, 2, 10), new DateOnly(2024, 2, 20) }
+                    { 1, 1, 1, 3, 0.0, new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 10) },
+                    { 2, 2, 2, 3, 0.0, new DateOnly(2024, 2, 10), new DateOnly(2024, 2, 20) }
                 });
 
             migrationBuilder.InsertData(

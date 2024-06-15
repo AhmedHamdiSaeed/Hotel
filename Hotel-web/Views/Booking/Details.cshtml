@@ -49,7 +49,7 @@
     <div  class="container-fluid m-4">
             <table class="table table-striped">
             <thead>
-                <th scope="col"></th>
+                <th scope="col">Room ID</th>
                 <th scope="col">RoomType</th>
                 <th scope="col">NumOfAdults</th>
                 <th scope="col">NumOfChildren</th>
@@ -72,7 +72,7 @@
             success: function (res) {
                 // Assuming res.data contains the booking object with properties like name, nationalId, phoneNumber
                 var booking = res.data;
-
+                console.log("booking : ",booking);
                 // Set input values
                 $('#name').val(booking.name);
                 $('#nationalId').val(booking.nationalId);
@@ -81,8 +81,8 @@
                 $('#checkInDate').val(booking.checkInDate);
                 $('#checkOutDate').val(booking.checkOutDate);
                 $('#numberOfRooms').val(booking.numOfRooms);
-                    $('#BookingDate').val(formatDateTime(booking.rooms[1].bookingDate));
-                    $('#TotalPrice').val(booking.totalPrice);
+                $('#BookingDate').val(formatDateTime(booking.bookingDate));
+                $('#TotalPrice').val(booking.totalPrice);
                 //rooms
                     function formatDateTime(dateObject) {
                         var date = new Date(dateObject);
@@ -90,7 +90,7 @@
                     }
                 var rooms = '';
                     $.each(booking.rooms, function (index, room) {
-                        rooms += '<tr scope="row"><td>' + (index + 1) + '</td> <td>' + room.roomType + '</td><td>' + room.numOfAdults + '</td><td>' + room.numOfChildren + '</td></tr>';
+                        rooms += '<tr><td>'+room.roomID+'</td><td>' + room.roomType + '</td><td>' + room.numOfAdults + '</td><td>' + room.numOfChildren + '</td></tr>';
                     });
                     $('#rooms').html(rooms);
             },

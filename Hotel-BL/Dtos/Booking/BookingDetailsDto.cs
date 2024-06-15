@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 namespace Hotel_BL.Dtos.Booking
 {
-    public record BookingDetailsDto(string Name, string NationalId, string phoneNumber,string BranchName, int NumOfRooms, DateOnly checkInDate, DateOnly checkOutDate, IEnumerable<BookingRoomDto> Rooms, double TotalPrice);
+    public record BookingDetailsDto(string Name, string NationalId, string phoneNumber,string BranchName, int NumOfRooms, DateOnly checkInDate, DateOnly checkOutDate, IEnumerable<BookingRoomDto> Rooms, double TotalPrice,DateTime BookingDate);
 
 }

@@ -8,17 +8,17 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <div class="container">
+
+        <div class="container-fluid m-4">
         <h1>Bookings</h1>
-        <table class="table" id="bookingsTable">
+        <table class=" table table-hover"id="bookingsTable">
             <thead>
                 <tr>
-                    <th>Customer Name</th>
-                    <th>Check-in Date</th>
-                    <th>Check-out Date</th>
-                    <th>Number of Rooms</th>
-                    <td>TotalPrice</td>
-                    <td>Details</td>
+                        <th scope="col">Customer Name</th>
+                        <th scope="col">Check-in Date</th>
+                        <th scope="col">Check-out Date</th>
+                        <th scope="col">Number of Rooms</th>
+                        <th scope="col">TotalPrice</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,14 +36,12 @@
                     var rows = '';
                     console.log("data : ", res.data);
                     $.each(res.data, function (index, booking) {
-                        rows += '<tr>' +
+                        rows += '<tr onclick="redirectToDetails(' + booking.id + ')">' +
                             '<td>' + booking.customer + '</td>' +
                             '<td>' + new Date(booking.checkInDate).toLocaleDateString() + '</td>' +
                             '<td>' + new Date(booking.checkOutDate).toLocaleDateString() + '</td>' +
                             '<td>' + booking.numOfRooms + '</td>' +
-                            '<td>' + booking.totalPrice + '</td>' +
-                            '<td>' + '<button type="button" onclick="redirectToDetails(' + booking.id + ')">Details</button>'
-                            + '</td>'
+                            '<td>' + booking.totalPrice + '</td>' +                         
                             + '</tr>';
                     });
                     $('#bookingsTable tbody').html(rows);

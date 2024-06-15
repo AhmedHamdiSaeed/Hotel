@@ -20,14 +20,17 @@
         <div class="form-group">
             <label for="name" class="col-form-label">Name</label>
             <input class="form-control" type="text" id="name" name="name" required />
+            <span id="nameError" style="color:red;"></span>
         </div>
         <div>
             <label for="nationalId" class="col-form-label">National ID</label>
             <input class="form-control" type="text" id="nationalId" name="nationalId" required />
+            <span id="nationalIDError" style="color:red;"></span>
         </div>
         <div>
             <label for="phoneNumber" class="col-form-label">Phone Number</label>
             <input class="form-control" type="text" id="phoneNumber" name="phoneNumber" required />
+            <span id="phoneNumberError" style="color:red;"></span>
         </div>
         <div>
             <label for="hotelBranch" class="col-form-label">Hotel Branch</label>
@@ -45,6 +48,7 @@
         </div>
         <div>
             <input class="form-control" type="number" id="numberOfRooms" placeholder="Number of Rooms" required>
+            <span id="numberOfRoomsError" style="color:red;"></span>
         </div>
         <button type="button" id="nextButton">Next</button>
     </form>
@@ -57,7 +61,54 @@
 
     <script>
         $(document).ready(function() {
-       
+            // name validation
+            $("#name").on("input", function () {
+                var value = $(this).val();
+                var nameError = $("#nameError");
+                if (!/^[a-zA-Z\s]+$/.test(value))
+                    nameError.text("Name can contain only letters and spaces.");
+                else if (value.length < 3 || value.length>15) 
+                    nameError.text("Name must be at least 3 characters long and less than 15 ."); 
+                else {
+                    nameError.text("");
+                }
+            });
+            // nationalId validation
+            $("#nationalId").on("input", function () {
+                var value = $(this).val();
+                var nationalIdError = $("#nationalIDError");
+                if (!/^\d*$/.test(value)) {
+                    nationalIdError.text("National ID must contain only numbers.");
+                } else if (value.length !== 14) {
+                    nationalIdError.text("National ID must be exactly 14 number.");
+                } else {
+                    nationalIdError.text("");
+                }
+            });
+            // phone number validation
+            $("#phoneNumber").on("input", function () {
+                var value = $(this).val();
+                var phoneError = $("#phoneNumberError");
+                if (!/^(010|011|012)\d*$/.test(value))
+                    phoneError.text("Phone number must start with 010, 011, or 012 and contain only numbers.");
+                else if (value.length != 11)
+                    phoneError.text("phone Number must be exactly 11 number.");
+                 else {
+                    phoneError.text("");
+                }
+            });
+            // numberOfRooms validation
+            $("#numberOfRooms").on("input", function () {
+                var value = $(this).val();
+                var nationalIdError = $("#numberOfRoomsError");
+                 if (value.length !== 1) {
+                    nationalIdError.text("numberOfRooms must be exactly one number.");
+                } else {
+                    nationalIdError.text("");
+                }
+            });
+
+
             $.getJSON('http://localhost:5161/api/Branch', function (res) {
                 var branchOptions = '';
                 $.each(res.data, function (index, value) {
