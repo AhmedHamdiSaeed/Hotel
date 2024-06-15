@@ -17,15 +17,15 @@ namespace Hotel_DAL.Repos.NewFolder
         {
             
         }
-        public IEnumerable<Room> GetAvailableRooms(DateOnly checkInDate, DateOnly checkOutDate, RoomType? roomType = null)
+        public List<Room>? GetAvailableRooms(DateOnly checkInDate, DateOnly checkOutDate, RoomType? roomType = null)
         {
-            var bookedRoomIds = _HotelDbContext.BookingRooms
+            var bookedRoomIds = _HotelDbContext.BookingRooms.AsNoTracking()
                 .Where(br => br.Booking.checkInDate <= checkOutDate && br.Booking.checkOutDate >= checkInDate)
                 .Select(br => br.RoomID)
                 .Distinct()
                 .ToList();
 
-            var availableRoomsQuery = _HotelDbContext.Rooms.Include(r=>r.Category)
+            var availableRoomsQuery = _HotelDbContext.Rooms.AsNoTracking().Include(r=>r.Category).Include(r=>r.Branch)
                 .Where(r => !bookedRoomIds.Contains(r.ID));
 
             if (roomType.HasValue)
@@ -37,7 +37,7 @@ namespace Hotel_DAL.Repos.NewFolder
         }
         public async Task<List<Room>?> getAllWithCategory()
         {
-            var rooms = await _HotelDbContext.Rooms.Include(r=>r.Category).ToListAsync();
+            var rooms = await _HotelDbContext.Rooms.Include(r=>r.Category).Include(r=>r.Branch).ToListAsync();
             if (rooms==null)
                 return null;
             return rooms;

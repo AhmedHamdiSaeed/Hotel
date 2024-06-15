@@ -27,23 +27,39 @@ namespace Hotel_BL.Managers.Booking
                 return null;
             }
             
-            return  booking.Select(b=>new BookingDto(b.Id,b.Customer.Name,b.Branch.Name,b.NumOfRooms,b.checkInDate,b.checkOutDate)).ToList();
+            return  booking.Select(b=>new BookingDto(b.Id,b.Customer.Name,b.Branch.Name,b.NumOfRooms,b.checkInDate,b.checkOutDate,b.TotalPrice)).ToList();
         }
-        public async Task<bool> AddBooking(BookingAddDto bookingAddDto)
+        public async Task<List<int>?> AddBooking(BookingAddDto bookingAddDto)
         {
+            var availbleRooms =  _unitOfWork.RoomRepo.GetAvailableRooms(bookingAddDto.BookingDate.checkInDate.ToDateOnly(), bookingAddDto.BookingDate.checkOutDate.ToDateOnly());
+            if (availbleRooms == null)
+                return new List<int>() { 0};
+            var availbleRoomIDs=availbleRooms.Select(r => r.ID);
+            var bookingRoomsID = bookingAddDto.Rooms.Select(r => r.roomID);
+            List<int> notAvailbleRoomsId = new List<int>(); ;    
+            foreach(var id in bookingRoomsID)
+            {
+                if (!availbleRoomIDs.Contains(id))
+                    notAvailbleRoomsId.Add(id);              
+            }
+            if(notAvailbleRoomsId.Count>0)
+                return notAvailbleRoomsId;
             var customer =  _unitOfWork.CustomerRepo.find(bookingAddDto.Name);
             if(customer==null)
             {
                customer=await _unitOfWork.CustomerRepo.Add(new Hotel_DAL.Data.Model.Customer() {Name=bookingAddDto.Name,NationalID=bookingAddDto.NationalId,PhoneNumber=bookingAddDto.phoneNumber});
                 await _unitOfWork.SaveChangeAsync();
             }
-            var booking= await _unitOfWork.BookingRepo.Add(new Hotel_DAL.Data.Model.Booking()
+            var bookedPreviously = this.ExistsPrev(bookingAddDto.Name);
+            var TotalPrice =this.calcPrice(bookingAddDto.BookingDate, bookingAddDto.Rooms, bookingAddDto.Name, bookedPreviously);
+            var booking = await _unitOfWork.BookingRepo.Add(new Hotel_DAL.Data.Model.Booking()
             {
                 BranchID = bookingAddDto.BranchID,
                 checkInDate = bookingAddDto.BookingDate.checkInDate.ToDateOnly(),
                 checkOutDate = bookingAddDto.BookingDate.checkOutDate.ToDateOnly(),
                 CustomerID = customer.Id,
                 NumOfRooms = bookingAddDto.NumOfRooms,
+                TotalPrice=TotalPrice
             });
             await _unitOfWork.SaveChangeAsync();
             foreach(var room in bookingAddDto.Rooms)
@@ -51,7 +67,7 @@ namespace Hotel_BL.Managers.Booking
                  _unitOfWork.BookingRepo.addBookingRoom(new BookingRoom() { BookingId=booking.Id,RoomID=room.roomID,NumOfAdults=room.NumberOfAdults,NumOfChildren=room.NumberOfChildren});
             }
             await _unitOfWork.SaveChangeAsync();
-            return true;
+            return null;
 
         }
         public async Task<BookingDetailsDto?> getByIdWithDetails(int id)
@@ -60,11 +76,10 @@ namespace Hotel_BL.Managers.Booking
             if (booking == null)
                 return null;
             var roomsDto = booking.BookingRooms.Select(r => new BookingRoomDto(r.Room.Category.RoomType.ToString(),r.NumOfAdults,r.NumOfChildren,r.BookingDate));
-            return new BookingDetailsDto(booking.Customer.Name, booking.Customer.NationalID, booking.Customer.PhoneNumber,booking.Branch.Name,booking.NumOfRooms,booking.checkInDate,booking.checkOutDate,roomsDto);
+            return new BookingDetailsDto(booking.Customer.Name, booking.Customer.NationalID, booking.Customer.PhoneNumber,booking.Branch.Name,booking.NumOfRooms,booking.checkInDate,booking.checkOutDate,roomsDto,booking.TotalPrice);
         }
-        public double calcPrice(BookingDate bookingDate,RoomAddDto[] rooms,string CustomerName)
+        public double calcPrice(BookingDate bookingDate,RoomAddDto[] rooms,string CustomerName, bool bookedPreviously)
         {
-            bool bookedPreviously = _unitOfWork.BookingRepo.checkBookedPreviously(CustomerName);
             var startDate = new DateTime(bookingDate.checkInDate.Year,bookingDate.checkInDate.Month,bookingDate.checkInDate.Day);
             var EndDate = new DateTime(bookingDate.checkOutDate.Year,bookingDate.checkOutDate.Month,bookingDate.checkOutDate.Day);
             var days = (EndDate.Date - startDate.Date).Days;
@@ -81,6 +96,13 @@ namespace Hotel_BL.Managers.Booking
             if (bookedPreviously)
                 return (TotalPrice * 0.05)+TotalPrice;
             return TotalPrice;
+        }
+        public bool ExistsPrev(string Name)
+        {
+            var customer=_unitOfWork.CustomerRepo.find(Name);
+            if(customer==null)
+                return false;
+            return true;
         }
 
     }

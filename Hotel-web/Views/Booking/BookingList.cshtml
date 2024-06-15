@@ -17,6 +17,8 @@
                     <th>Check-in Date</th>
                     <th>Check-out Date</th>
                     <th>Number of Rooms</th>
+                    <td>TotalPrice</td>
+                    <td>Details</td>
                 </tr>
             </thead>
             <tbody>
@@ -39,6 +41,7 @@
                             '<td>' + new Date(booking.checkInDate).toLocaleDateString() + '</td>' +
                             '<td>' + new Date(booking.checkOutDate).toLocaleDateString() + '</td>' +
                             '<td>' + booking.numOfRooms + '</td>' +
+                            '<td>' + booking.totalPrice + '</td>' +
                             '<td>' + '<button type="button" onclick="redirectToDetails(' + booking.id + ')">Details</button>'
                             + '</td>'
                             + '</tr>';

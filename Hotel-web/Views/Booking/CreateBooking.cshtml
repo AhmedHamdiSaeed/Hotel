@@ -70,7 +70,7 @@
 
             $('#nextButton').on('click', function () {
                 var allFilled = true;
-
+                console.log("dateOUt : ", $("#checkOutDate").val().toString());
                 $('#bookingForm input[required], #bookingForm select[required]').each(function () {
                     if ($(this).val() === '') {
                         allFilled = false;
@@ -177,7 +177,7 @@
                                 name: $('#name').val(),
                                 nationalId: $('#nationalId').val(),
                                 phoneNumber: $('#phoneNumber').val(),
-                                branchID:parseInt($('#hotelBranch').val())-1,
+                                branchID:parseInt($('#hotelBranch').val()),
                                 numOfRooms: parseInt($('#numberOfRooms').val()),
                                 bookingDate: {
                                     checkInDate: {
@@ -193,6 +193,7 @@
                                 },
                                 rooms: rooms
                             };
+                            console.log("bookind : ", JSON.stringify(booking));
                             $.ajax({
                                 url: 'http://localhost:5161/api/Booking', // Replace with your API endpoint
                                 type: 'POST',
@@ -207,8 +208,8 @@
                                     window.location.href = redirectUrl;
                                 },
                                 error: function (xhr, status, error) {
-                                    alert('Error: ' + error);
-                                    console.error(xhr);
+                                    alert(`${error.Message} : ${error.data}`);
+                                    console.error(error);
                                 }
                             });
 

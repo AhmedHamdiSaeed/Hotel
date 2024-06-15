@@ -12,7 +12,7 @@ namespace Hotel_BL.Managers.Room
     public interface IRoomManager
     {
         Task<List<RoomDto>?> getAllWithCategory();
-        IEnumerable<RoomDto> GetAvailableRooms(DateModel checkInDate, DateModel checkOutDate, RoomType? roomType = null);
+        List<RoomDto>? GetAvailableRooms(DateModel checkInDate, DateModel checkOutDate, RoomType? roomType = null);
 
     }
 }

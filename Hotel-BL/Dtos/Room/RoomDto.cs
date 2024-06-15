@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace Hotel_BL.Dtos.Room
 {
-    public record RoomDto(int ID,string RoomType,int MaxChildren,int MaxAdults);
+    public record RoomDto(int ID,string RoomType,int MaxChildren,int MaxAdults,int BranchID);
 }

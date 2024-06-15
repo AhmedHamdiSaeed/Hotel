@@ -41,7 +41,10 @@
             <label for="numberOfRooms" class="col-form-label">Booking Date</label>
             <input class="form-control" type="text" id="BookingDate" readonly>
         </div>
-
+        <div>
+            <label for="TotalPrice" class="col-form-label">TotalPrice</label>
+            <input class="form-control" type="number" id="TotalPrice" readonly>
+        </div>
         <h3>Rooms</h3>
     <div  class="container-fluid m-4">
             <table class="table table-striped">
@@ -79,6 +82,7 @@
                 $('#checkOutDate').val(booking.checkOutDate);
                 $('#numberOfRooms').val(booking.numOfRooms);
                     $('#BookingDate').val(formatDateTime(booking.rooms[1].bookingDate));
+                    $('#TotalPrice').val(booking.totalPrice);
                 //rooms
                     function formatDateTime(dateObject) {
                         var date = new Date(dateObject);
@@ -99,80 +103,3 @@
 
         </body>
 </html>
-
-
-
-
-
-
-@* 
-
-            <div class="container mt-5">
-    <h2>Booking Details</h2>
-    <hr>
-
-    <div id="bookingDetails">
-        <!-- Booking details will be loaded here -->
-    </div>
-</div>
-
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            var bookingId = @Model; // Assuming Model.Id contains the booking ID
-
-            $.ajax({
-                url: 'http://localhost:5161/api/Booking/' + bookingId,
-                type: 'GET',
-                success: function (data) {
-                    var booking = data;
-                    var html = '';
-
-                    // Render customer information
-                    html += '<h4>Customer Information</h4>';
-                    html += '<p><strong>Name:</strong> ' + booking.name + '</p>';
-                    html += '<p><strong>National ID:</strong> ' + booking.nationalId + '</p>';
-                    html += '<p><strong>Phone Number:</strong> ' + booking.phoneNumber + '</p>';
-
-                    // Render booking information
-                    html += '<h4>Booking Information</h4>';
-                    html += '<p><strong>Branch Name:</strong> ' + booking.branchName + '</p>';
-                    html += '<p><strong>Number of Rooms:</strong> ' + booking.numOfRooms + '</p>';
-                    html += '<p><strong>Check-In Date:</strong> ' + new Date(booking.checkInDate).toLocaleDateString() + '</p>';
-                    html += '<p><strong>Check-Out Date:</strong> ' + new Date(booking.checkOutDate).toLocaleDateString() + '</p>';
-
-                    // Render rooms information
-                    html += '<h4>Rooms</h4>';
-                    html += '<table class="table table-striped">';
-                    html += '<thead>';
-                    html += '<tr>';
-                    html += '<th>Room Type</th>';
-                    html += '<th>Number of Adults</th>';
-                    html += '<th>Number of Children</th>';
-                    html += '<th>Booking Date</th>';
-                    html += '</tr>';
-                    html += '</thead>';
-                    html += '<tbody>';
-
-                    $.each(booking.rooms, function (index, room) {
-                        html += '<tr>';
-                        html += '<td>' + room.roomType + '</td>';
-                        html += '<td>' + room.numOfAdults + '</td>';
-                        html += '<td>' + room.numOfChildren + '</td>';
-                        html += '<td>' + new Date(room.bookingDate).toLocaleString() + '</td>';
-                        html += '</tr>';
-                    });
-
-                    html += '</tbody>';
-                    html += '</table>';
-
-                    $('#bookingDetails').html(html);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching booking details:', error);
-                }
-            });
-        });
-        
-    </script>
-    } *@

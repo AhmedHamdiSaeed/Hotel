@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotel_DAL.Migrations
 {
     [DbContext(typeof(HotelDbContext))]
-    [Migration("20240612191057_ee")]
-    partial class ee
+    [Migration("20240614154935_q")]
+    partial class q
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -227,10 +227,15 @@ namespace Hotel_DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<int>("BranchID")
+                        .HasColumnType("int");
+
                     b.Property<int>("CategoryID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("BranchID");
 
                     b.HasIndex("CategoryID");
 
@@ -240,36 +245,43 @@ namespace Hotel_DAL.Migrations
                         new
                         {
                             ID = 1,
+                            BranchID = 1,
                             CategoryID = 1
                         },
                         new
                         {
                             ID = 2,
+                            BranchID = 1,
                             CategoryID = 1
                         },
                         new
                         {
                             ID = 3,
+                            BranchID = 2,
                             CategoryID = 2
                         },
                         new
                         {
                             ID = 4,
+                            BranchID = 1,
                             CategoryID = 1
                         },
                         new
                         {
                             ID = 5,
+                            BranchID = 2,
                             CategoryID = 3
                         },
                         new
                         {
                             ID = 6,
+                            BranchID = 2,
                             CategoryID = 2
                         },
                         new
                         {
                             ID = 7,
+                            BranchID = 1,
                             CategoryID = 3
                         });
                 });
@@ -314,11 +326,19 @@ namespace Hotel_DAL.Migrations
 
             modelBuilder.Entity("Hotel_DAL.Data.Model.Room", b =>
                 {
+                    b.HasOne("Hotel_DAL.Data.Model.Branch", "Branch")
+                        .WithMany("Rooms")
+                        .HasForeignKey("BranchID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Hotel_DAL.Data.Model.Category", "Category")
                         .WithMany("Categories")
                         .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Category");
                 });
@@ -326,6 +346,11 @@ namespace Hotel_DAL.Migrations
             modelBuilder.Entity("Hotel_DAL.Data.Model.Booking", b =>
                 {
                     b.Navigation("BookingRooms");
+                });
+
+            modelBuilder.Entity("Hotel_DAL.Data.Model.Branch", b =>
+                {
+                    b.Navigation("Rooms");
                 });
 
             modelBuilder.Entity("Hotel_DAL.Data.Model.Category", b =>

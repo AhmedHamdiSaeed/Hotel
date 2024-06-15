@@ -35,12 +35,13 @@ namespace Hotel_API.Controllers.Booking
         [HttpPost]
         public async Task<ActionResult> Booking(BookingAddDto booking)
         {
-            var added = await _bookingManager.AddBooking(booking);
-            if (!added)
+            var bookedPreviously = _bookingManager.ExistsPrev(booking.Name);
+            var message = await _bookingManager.AddBooking(booking);
+            if (message != null)
             {
-                return BadRequest(new ApiResponse(400, "faild", string.Empty));
+                return BadRequest(new ApiResponse(400, "These rooms ID are not available", message));
             }
-            var TotalPrice = _bookingManager.calcPrice(booking.BookingDate,booking.Rooms,booking.Name);
+            var TotalPrice = _bookingManager.calcPrice(booking.BookingDate,booking.Rooms,booking.Name, bookedPreviously);
             return Ok(new ApiResponse(200, "success", TotalPrice));
         }
 

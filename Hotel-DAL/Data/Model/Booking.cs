@@ -13,6 +13,7 @@ namespace Hotel_DAL.Data.Model
 
         public DateOnly checkInDate { get; set; }
         public DateOnly checkOutDate { get; set; }
+        public double TotalPrice { get; set; }  
         public int NumOfRooms { get; set; }
         public int BranchID { get; set; }
         public int CustomerID { get; set; } 

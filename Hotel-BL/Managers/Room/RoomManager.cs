@@ -23,13 +23,15 @@ namespace Hotel_BL.Managers.Room
             var Rooms = await _UnitOfWork.RoomRepo.getAllWithCategory();
             if (Rooms == null)
                 return null;
-            return Rooms.Select(r => new RoomDto(r.ID, r.Category.RoomType.ToString(), r.Category.MaxChildren, r.Category.MaxAdults)).ToList();
+            return Rooms.Select(r => new RoomDto(r.ID, r.Category.RoomType.ToString(), r.Category.MaxChildren, r.Category.MaxAdults,r.Branch.Id)).ToList();
         }
-        public  IEnumerable<RoomDto> GetAvailableRooms(DateModel checkInDate, DateModel checkOutDate, RoomType? roomType = null)
+        public  List<RoomDto>? GetAvailableRooms(DateModel checkInDate, DateModel checkOutDate, RoomType? roomType = null)
         {
             
-           var rooms= _UnitOfWork.RoomRepo.GetAvailableRooms(checkInDate.ToDateOnly(), checkOutDate.ToDateOnly(), roomType);
-        return rooms.Select(r => new RoomDto(r.ID, r.Category.RoomType.ToString(), r.Category.MaxAdults, r.Category.MaxChildren)).ToList();
+           var rooms=  _UnitOfWork.RoomRepo.GetAvailableRooms(checkInDate.ToDateOnly(), checkOutDate.ToDateOnly(), roomType);
+            if(rooms==null)
+                return null;
+        return rooms.Select(r => new RoomDto(r.ID, r.Category.RoomType.ToString(), r.Category.MaxChildren, r.Category.MaxAdults,r.Branch.Id)).ToList();
         }
 
     }

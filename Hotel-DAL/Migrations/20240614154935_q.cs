@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Hotel_DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class ee : Migration
+    public partial class q : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -62,11 +62,17 @@ namespace Hotel_DAL.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CategoryID = table.Column<int>(type: "int", nullable: false)
+                    CategoryID = table.Column<int>(type: "int", nullable: false),
+                    BranchID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rooms", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Rooms_Branches_BranchID",
+                        column: x => x.BranchID,
+                        principalTable: "Branches",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Rooms_Categories_CategoryID",
                         column: x => x.CategoryID,
@@ -170,16 +176,16 @@ namespace Hotel_DAL.Migrations
 
             migrationBuilder.InsertData(
                 table: "Rooms",
-                columns: new[] { "ID", "CategoryID" },
+                columns: new[] { "ID", "BranchID", "CategoryID" },
                 values: new object[,]
                 {
-                    { 1, 1 },
-                    { 2, 1 },
-                    { 3, 2 },
-                    { 4, 1 },
-                    { 5, 3 },
-                    { 6, 2 },
-                    { 7, 3 }
+                    { 1, 1, 1 },
+                    { 2, 1, 1 },
+                    { 3, 2, 2 },
+                    { 4, 1, 1 },
+                    { 5, 2, 3 },
+                    { 6, 2, 2 },
+                    { 7, 1, 3 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -196,6 +202,11 @@ namespace Hotel_DAL.Migrations
                 name: "IX_Bookings_CustomerID",
                 table: "Bookings",
                 column: "CustomerID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rooms_BranchID",
+                table: "Rooms",
+                column: "BranchID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_CategoryID",
@@ -216,10 +227,10 @@ namespace Hotel_DAL.Migrations
                 name: "Rooms");
 
             migrationBuilder.DropTable(
-                name: "Branches");
+                name: "Customers");
 
             migrationBuilder.DropTable(
-                name: "Customers");
+                name: "Branches");
 
             migrationBuilder.DropTable(
                 name: "Categories");
