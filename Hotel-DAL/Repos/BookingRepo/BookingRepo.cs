@@ -16,9 +16,9 @@ namespace Hotel_DAL.Repos.BookingRepo
         {
            
         }
-        public async Task<List<Booking>?> getAllWithCustomerAndBranch()
+        public IQueryable<Booking>? getAllWithCustomerAndBranch()
         {
-            return await _HotelDbContext.Bookings.Include(b => b.Branch).Include(b=>b.Customer).ToListAsync();
+            return _HotelDbContext.Bookings.Include(b => b.Branch).Include(b=>b.Customer).AsQueryable();
         }
         public  void addBookingRoom(BookingRoom bookingRoom)
         {

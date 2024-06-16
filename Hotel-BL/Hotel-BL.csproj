@@ -15,4 +15,8 @@
     <Folder Include="Dtos\Customer\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.4.0" />
+  </ItemGroup>
+
 </Project>

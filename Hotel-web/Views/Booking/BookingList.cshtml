@@ -4,13 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookings</title>
+    <style>
+        #pages span{
+            background-color:blue;
+            color:white;
+            font-weight:bold;
+            font-size:15px;
+            margin:5px;
+            padding:10px;
+            width:15px;
+            height:10px;
+            border-radius:5px;   
+        text-align: center}
+        #pagesContainer{
+            display:flex;
+           justify-content:center;
+        }
+        #filter div{
+            display:inline-block;
+        }
+
+    #filter{
+        display:flex;
+        justify-content:space-between;
+    }
+
+        #pagesContainer #pages .highlight {
+            background-color:#eeee;
+            color:blue
+        }
+
+        .page-number{
+            cursor:pointer;
+        }
+    </style>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
-        <div class="container-fluid m-4">
+        <div id="table" class=" container-fluid m-4">
         <h1>Bookings</h1>
+        <div id="filter" class="container p-2 mt-4">
+            <div class="search">
+                <label class="fw-bold" for="name">Name : </label>
+                <input type="text" id="name" name="name" />
+            </div>
+            <div class="OrderBy">
+                <div class="fw-bold">Order By : </div>
+                <select id="selectFilter">
+                    <option value="" selected>Select an option</option>
+                    <option value="TotalPrice">Price</option>
+                    <option value="NumOfRooms">Number Of Rooms</option>
+                    <option value="Name">Name</option>
+                </select>
+            </div>
+       
+        </div>
         <table class=" table table-hover"id="bookingsTable">
             <thead>
                 <tr>
@@ -25,37 +75,107 @@
                 <!-- Data will be inserted here -->
             </tbody>
         </table>
+        
+        <div id="pagesContainer">
+                <button id="prev" onclick="prevPage()">Prev</button>
+                <div id="pages">
+                </div>
+          
+
+            <button id="next" onclick="nextPage()">Next</button>
+        </div>
     </div>
 
+
+
     <script>
+        var pageNumber = 1;
+        var sortBy = "";
+        var searchTerm = "";
+        var totalPages = 0;
+        var page = 1;
+        var pageSize = 10;
+        var total = 0;
+
         $(document).ready(function () {
+       
+            LoadPage();
+            HighlightPageNumber(1);
+            $("#name").on("input", function search() {
+                searchTerm = $(this).val();
+                LoadPage();
+            });
+            $("#selectFilter").on("change", function () {
+                sortBy = $(this).val();
+                console.log(" sortBy : ",sortBy);
+                LoadPage();
+            })
+            
+        });
+      
+        function prevPage(){
+            pageNumber=pageNumber - 1;
+            LoadPage();
+        }
+        function nextPage() {
+            pageNumber = pageNumber + 1;
+            LoadPage();
+        }
+        function LoadPage() {
             $.ajax({
                 url: 'http://localhost:5161/api/Booking',
                 type: 'GET',
+                data: {
+                    pageNumber: pageNumber,
+                    sortBy: sortBy,
+                    SearchTerm: searchTerm
+                },
                 success: function (res) {
                     var rows = '';
-                    console.log("data : ", res.data);
-                    $.each(res.data, function (index, booking) {
+                    totalPages = res.data.totalPages;
+                    page = res.data.page;
+                    total = res.data;
+                    $.each(res.data.data, function (index, booking) {
                         rows += '<tr onclick="redirectToDetails(' + booking.id + ')">' +
                             '<td>' + booking.customer + '</td>' +
                             '<td>' + new Date(booking.checkInDate).toLocaleDateString() + '</td>' +
                             '<td>' + new Date(booking.checkOutDate).toLocaleDateString() + '</td>' +
                             '<td>' + booking.numOfRooms + '</td>' +
-                            '<td>' + booking.totalPrice + '</td>' +                         
+                            '<td>' + booking.totalPrice + '</td>' +
                             + '</tr>';
                     });
                     $('#bookingsTable tbody').html(rows);
+                    var pagesSpan = "";
+                    for (var i = 1; i <= totalPages; i++) {
+                        pagesSpan += '<span class="page-number" id="page-'+i+'" onclick=changePage(' + i + ')>' + i + '</span>';
+                    }
+                    $('#pages').html(pagesSpan);
+                    HighlightPageNumber(page);
+                    if(page==1)
+                        $('#prev').prop('disabled', true);
+                    else
+                        $('#prev').prop('disabled', false);
+                    if(page==totalPages)
+                        $('#next').prop('disabled', true);
+                    else
+                        $('#next').prop('disabled', false);
                 },
                 error: function (xhr, status, error) {
                     alert('Error: ' + error);
                 }
             });
-        });
-
+        }
+        function HighlightPageNumber(pageNumber) { 
+            $('.page-number').removeClass('highlight');
+            $("#page-"+pageNumber+"").addClass("highlight");
+        }
+        function  changePage(Number) { 
+            pageNumber = Number;
+             LoadPage();
+        }
         function redirectToDetails(id) {
             var url = '@Url.Action("Details", "Booking")/' + id;
             window.location.href = url;
-            console.log("inside func");
         }
     </script>
 </body>

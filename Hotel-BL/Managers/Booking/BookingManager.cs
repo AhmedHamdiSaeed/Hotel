@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Hotel_DAL.Data.Model;
 using Hotel_BL.Dtos.Room;
+using Hotel_BL.Services;
 
 namespace Hotel_BL.Managers.Booking
 {
@@ -19,15 +20,32 @@ namespace Hotel_BL.Managers.Booking
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<BookingDto>?> GetAll()
+        public   object? GetAll(QueryParams queryParams)
         {
-           var booking= await _unitOfWork.BookingRepo.getAllWithCustomerAndBranch();
-            if (booking == null) 
+           var query=  _unitOfWork.BookingRepo.getAllWithCustomerAndBranch();
+            if (query == null) 
             {
                 return null;
             }
-            
-            return  booking.Select(b=>new BookingDto(b.Id,b.Customer.Name,b.Branch.Name,b.NumOfRooms,b.checkInDate,b.checkOutDate,b.TotalPrice)).ToList();
+            if (!string.IsNullOrWhiteSpace(queryParams.SearchTerm))
+                query=query.Where(b=>b.Customer.Name.Contains(queryParams.SearchTerm)).AsQueryable();
+            if (!string.IsNullOrWhiteSpace(queryParams.SortBy))
+            {
+                if (queryParams.SortBy == "TotalPrice")
+                    query = query.OrderBy(o => o.TotalPrice);
+                else if (queryParams.SortBy == "Name")
+                    query = query.OrderBy(o => o.Customer.Name);
+                else if (queryParams.SortBy == "NumOfRooms")
+                    query = query.OrderBy(o => o.NumOfRooms);
+                else
+                    throw new Exception("not found this property");
+            }
+            //paging
+            var Total = query.Count();
+            var totalPages=Total/queryParams.PageSize;
+            if (totalPages < 1) totalPages = 1;
+            var skipAmount=(queryParams.PageNumber-1)*queryParams.PageSize;
+            return   new QueryResult(query.Skip(skipAmount).Take(queryParams.PageSize).Select(b => new BookingDto(b.Id, b.Customer.Name, b.Branch.Name, b.NumOfRooms, b.checkInDate, b.checkOutDate, b.TotalPrice)).ToList(),totalPages,queryParams.PageNumber,queryParams.PageSize,Total);
         }
         public async Task<List<int>?> AddBooking(BookingAddDto bookingAddDto)
         {

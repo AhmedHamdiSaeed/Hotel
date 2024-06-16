@@ -2,6 +2,7 @@
 using Hotel_BL.Dtos.Booking;
 using Hotel_BL.Dtos.Room;
 using Hotel_BL.Managers.Booking;
+using Hotel_BL.Services;
 using Hotel_DAL.Data.Model;
 using Hotel_DAL.Unit;
 using Microsoft.AspNetCore.Http;
@@ -22,14 +23,14 @@ namespace Hotel_API.Controllers.Booking
 
 
         [HttpGet]
-        public async Task<ActionResult<BookingDto>> GetAll()
+        public  ActionResult<BookingDto> GetAll([FromQuery] QueryParams queryParams)
         {
-          var Bookings= await _bookingManager.GetAll();
-          if (Bookings == null)
+          var query=  _bookingManager.GetAll(queryParams);
+          if (query == null)
             {
                 return NotFound(new ApiResponse(404, $"Bookings Not Found.", string.Empty));
             }
-            return Ok(new ApiResponse(200, "success", Bookings));
+            return Ok(new ApiResponse(200, "success",query));
         }
 
 

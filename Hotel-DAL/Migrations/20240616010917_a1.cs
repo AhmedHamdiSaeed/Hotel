@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Hotel_DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class q : Migration
+    public partial class a1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -92,7 +92,8 @@ namespace Hotel_DAL.Migrations
                     TotalPrice = table.Column<double>(type: "float", nullable: false),
                     NumOfRooms = table.Column<int>(type: "int", nullable: false),
                     BranchID = table.Column<int>(type: "int", nullable: false),
-                    CustomerID = table.Column<int>(type: "int", nullable: false)
+                    CustomerID = table.Column<int>(type: "int", nullable: false),
+                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
@@ -171,8 +172,36 @@ namespace Hotel_DAL.Migrations
                 columns: new[] { "Id", "BranchID", "CustomerID", "NumOfRooms", "TotalPrice", "checkInDate", "checkOutDate" },
                 values: new object[,]
                 {
-                    { 1, 1, 1, 3, 0.0, new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 10) },
-                    { 2, 2, 2, 3, 0.0, new DateOnly(2024, 2, 10), new DateOnly(2024, 2, 20) }
+                    { 1, 1, 1, 1, 2000.0, new DateOnly(2024, 12, 1), new DateOnly(2024, 12, 5) },
+                    { 2, 1, 1, 1, 2000.0, new DateOnly(2024, 12, 6), new DateOnly(2024, 12, 10) },
+                    { 3, 1, 1, 1, 2000.0, new DateOnly(2024, 12, 11), new DateOnly(2024, 12, 15) },
+                    { 4, 1, 1, 1, 2000.0, new DateOnly(2024, 12, 16), new DateOnly(2024, 12, 20) },
+                    { 5, 1, 1, 1, 2000.0, new DateOnly(2024, 12, 21), new DateOnly(2024, 12, 25) },
+                    { 6, 1, 1, 1, 2000.0, new DateOnly(2024, 12, 26), new DateOnly(2024, 12, 30) },
+                    { 7, 1, 1, 1, 2000.0, new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 5) },
+                    { 8, 1, 1, 1, 2000.0, new DateOnly(2024, 1, 6), new DateOnly(2024, 1, 10) },
+                    { 9, 1, 1, 1, 2000.0, new DateOnly(2024, 1, 11), new DateOnly(2024, 1, 15) },
+                    { 10, 1, 1, 1, 2000.0, new DateOnly(2024, 1, 16), new DateOnly(2024, 1, 20) },
+                    { 11, 1, 1, 1, 2000.0, new DateOnly(2024, 1, 21), new DateOnly(2024, 1, 25) },
+                    { 12, 1, 1, 1, 2000.0, new DateOnly(2024, 1, 26), new DateOnly(2024, 1, 30) },
+                    { 13, 1, 1, 1, 2000.0, new DateOnly(2024, 2, 1), new DateOnly(2024, 2, 5) },
+                    { 14, 1, 1, 1, 2000.0, new DateOnly(2024, 2, 6), new DateOnly(2024, 2, 10) },
+                    { 15, 1, 1, 1, 2000.0, new DateOnly(2024, 2, 11), new DateOnly(2024, 2, 15) },
+                    { 16, 1, 1, 1, 2000.0, new DateOnly(2024, 2, 16), new DateOnly(2024, 2, 20) },
+                    { 17, 1, 1, 1, 2000.0, new DateOnly(2024, 2, 21), new DateOnly(2024, 2, 25) },
+                    { 18, 1, 1, 1, 2000.0, new DateOnly(2024, 2, 26), new DateOnly(2024, 2, 27) },
+                    { 19, 1, 1, 1, 2000.0, new DateOnly(2024, 2, 28), new DateOnly(2024, 2, 29) },
+                    { 20, 1, 1, 1, 2000.0, new DateOnly(2024, 3, 1), new DateOnly(2024, 3, 2) },
+                    { 21, 1, 1, 1, 2000.0, new DateOnly(2024, 3, 3), new DateOnly(2024, 3, 5) },
+                    { 22, 1, 1, 1, 2000.0, new DateOnly(2024, 3, 6), new DateOnly(2024, 3, 8) },
+                    { 23, 1, 1, 1, 2000.0, new DateOnly(2024, 3, 9), new DateOnly(2024, 3, 11) },
+                    { 24, 1, 1, 1, 2000.0, new DateOnly(2024, 3, 12), new DateOnly(2024, 3, 14) },
+                    { 25, 1, 1, 1, 2000.0, new DateOnly(2024, 3, 15), new DateOnly(2024, 3, 19) },
+                    { 26, 1, 1, 1, 2000.0, new DateOnly(2024, 3, 20), new DateOnly(2024, 3, 23) },
+                    { 27, 1, 1, 1, 2000.0, new DateOnly(2024, 3, 24), new DateOnly(2024, 3, 26) },
+                    { 28, 1, 1, 1, 2000.0, new DateOnly(2024, 3, 27), new DateOnly(2024, 3, 30) },
+                    { 29, 1, 1, 1, 2000.0, new DateOnly(2024, 4, 1), new DateOnly(2024, 4, 5) },
+                    { 30, 1, 1, 1, 2000.0, new DateOnly(2024, 4, 10), new DateOnly(2024, 4, 15) }
                 });
 
             migrationBuilder.InsertData(

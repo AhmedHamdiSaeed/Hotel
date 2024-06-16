@@ -10,7 +10,7 @@ namespace Hotel_DAL.Repos.BookingRepo
 {
     public interface IBookingRepo:IGenericRepo<Booking>
     {
-        Task<List<Booking>?> getAllWithCustomerAndBranch();
+        IQueryable<Booking>? getAllWithCustomerAndBranch();
         void addBookingRoom(BookingRoom bookingRoom);
         Task<Booking?> getByIdWithDetails(int id);
         bool checkBookedPreviously(string CustomerName);
